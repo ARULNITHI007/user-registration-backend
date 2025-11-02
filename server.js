@@ -18,7 +18,7 @@ const db = mysql.createConnection({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 3306,
-  ssl: { rejectUnauthorized: true } // Required for Render + Cloud MySQL
+  ssl: { rejectUnauthorized: false } // Required for Render + Cloud MySQL
 });
 
 db.connect(err => {
