@@ -71,4 +71,4 @@ app.post('/register', async (req, res) => {
 
 // Dynamic port for Render
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(🚀 Server running on http://localhost:${PORT}));
+app.listen(PORT, () => console.log('🚀 Server running on http://localhost:${PORT}'));
