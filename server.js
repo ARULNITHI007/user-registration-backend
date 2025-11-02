@@ -1,6 +1,11 @@
 // Import packages
 const express = require('express');
 const cors = require('cors');
+app.use(cors({
+  orgin:"https://freefire-free-diamond.neocities.org",
+  method:['GET','POST'],
+  credentials:true
+}));
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 
@@ -71,4 +76,4 @@ app.post('/register', async (req, res) => {
 
 // Dynamic port for Render
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('🚀 Server running on http://localhost:${PORT}'));
+app.listen(PORT, () => console.log('🚀 Server running on port ${PORT}'));
